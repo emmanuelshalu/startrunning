@@ -1,4 +1,5 @@
 music/
+output/
 mix/
 .venv/
 build/

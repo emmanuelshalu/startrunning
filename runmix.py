@@ -19,7 +19,13 @@ instruction_times = {
 # Directory setup
 music_folder = 'music'
 instruction_folder = 'instructions'
+output_folder = 'output'  # Added output folder
 # Output filename will be set based on selected day
+
+# Create output folder if it doesn't exist
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    print(f"Created output folder: {output_folder}")
 
 # Hardcoded preset sequences for different days
 day_sequences = {
@@ -47,7 +53,7 @@ while True:
         
         if day in day_sequences:
             sequence = day_sequences[day].split(',')
-            output_file = f'day{day}_run_mix.mp3'  # Set output filename based on selected day
+            output_file = os.path.join(output_folder, f'day{day}_run_mix.mp3')  # Set output filename in output folder
             print(f"Selected Day {day} sequence with {len(sequence)} intervals")
             print(f"Output will be saved as: {output_file}")
             break
