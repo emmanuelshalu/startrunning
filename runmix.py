@@ -32,7 +32,8 @@ day_sequences = {
     1: 'w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5',
     2: 'w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5',
     3: 'w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5',
-    4: 'w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5'
+    4: 'w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5',
+    5: 'w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5'
 }
 
 # Prompt user for day selection with clear instructions
@@ -44,11 +45,12 @@ print("Day 1: 12 intervals (w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5)")
 print("Day 2: 14 intervals (w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5)")
 print("Day 3: 16 intervals (w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5)")
 print("Day 4: 14 intervals (w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5)")
+print("Day 5: 14 intervals (w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5)")
 print("=" * 50)
 
 while True:
     try:
-        day_input = input("Enter the day (1-4): ").strip()
+        day_input = input("Enter the day (1-5): ").strip()
         day = int(day_input)
         
         if day in day_sequences:
@@ -58,9 +60,9 @@ while True:
             print(f"Output will be saved as: {output_file}")
             break
         else:
-            print("Invalid day! Please enter 1-4.")
+            print("Invalid day! Please enter 1-5.")
     except ValueError:
-        print("Invalid input! Please enter a number (1-4).")
+        print("Invalid input! Please enter a number (1-5).")
 
 # Combine all music files into one big track
 music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
