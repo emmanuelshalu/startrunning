@@ -33,24 +33,18 @@ day_sequences = {
     2: 'w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5',
     3: 'w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5',
     4: 'w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5',
-    5: 'w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5'
+    5: 'w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5',
+    6: 'w5,r1,w1,r2,w1,r2,w1,r3,w2,r3,w2,r2,w1,r1,w5'
 }
 
 # Prompt user for day selection with clear instructions
-print("=" * 50)
+print("=" * 70)
 print("RUN MIX GENERATOR")
-print("=" * 50)
-print("Available preset sequences:")
-print("Day 1: 12 intervals (w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5)")
-print("Day 2: 14 intervals (w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5)")
-print("Day 3: 16 intervals (w5,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w1,r1,w5)")
-print("Day 4: 14 intervals (w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5)")
-print("Day 5: 14 intervals (w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5)")
-print("=" * 50)
+print("=" * 70)
 
 while True:
     try:
-        day_input = input("Enter the day (1-5): ").strip()
+        day_input = input("Enter the day (1-6): ").strip()
         day = int(day_input)
         
         if day in day_sequences:
@@ -60,9 +54,9 @@ while True:
             print(f"Output will be saved as: {output_file}")
             break
         else:
-            print("Invalid day! Please enter 1-5.")
+            print("Invalid day! Please enter 1-6.")
     except ValueError:
-        print("Invalid input! Please enter a number (1-5).")
+        print("Invalid input! Please enter a number (1-6).")
 
 # Combine all music files into one big track
 music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
@@ -98,6 +92,12 @@ if os.path.exists(day_mention_path):
 else:
     print(f"Warning: {day_mention_code}.mp3 not found in instructions folder. Skipping day mention audio.")
 
+# Calculate total duration of the sequence first
+total_duration = sum(instruction_times[code] for code in sequence) * 1000  # in ms
+half_way_point = total_duration // 2
+current_position = 0
+half_way_reached = False
+
 # Process sequence
 for i, code in enumerate(sequence):
     # Load instruction MP3
@@ -113,8 +113,8 @@ for i, code in enumerate(sequence):
     # Check if this is the last instruction in the sequence
     is_last_instruction = (i == len(sequence) - 1)
     
+    # Handle the last instruction separately
     if is_last_instruction:
-        # For the last instruction, play the current song until its end
         # Find the current song that's playing at cursor position
         current_song_start = 0
         current_song_end = 0
@@ -135,11 +135,39 @@ for i, code in enumerate(sequence):
         remaining_duration = current_song_end - cursor
         music_segment = full_music[cursor:cursor + remaining_duration]
         final_track += music_segment
+        break  # Exit the loop after handling the last instruction
+    
+    # For non-last instructions, get the music segment for this interval
+    music_segment = full_music[cursor:cursor + duration_ms]
+    
+    # Check if we've reached or passed the halfway point
+    if not half_way_reached and (current_position + duration_ms >= half_way_point):
+        # Calculate position to insert half-time announcement
+        insert_pos = half_way_point - current_position
+        
+        # Split the current music segment
+        first_half = music_segment[:insert_pos]
+        second_half = music_segment[insert_pos:]
+        
+        # Add first half of music
+        final_track += first_half
+        
+        # Add half-time announcement if the file exists
+        half_announcement_path = os.path.join(instruction_folder, 'half.mp3')
+        if os.path.exists(half_announcement_path):
+            half_announcement = AudioSegment.from_mp3(half_announcement_path)
+            final_track += half_announcement + AudioSegment.silent(duration=500)
+        
+        # Add second half of music
+        final_track += second_half
+        half_way_reached = True
     else:
-        # For all other instructions, use the normal duration
-        music_segment = full_music[cursor:cursor + duration_ms]
+        # Normal processing if we haven't reached or already passed halfway
         final_track += music_segment
-        cursor += duration_ms
+    
+    # Update position and cursor
+    current_position += duration_ms
+    cursor += duration_ms
 
 # Export the final track
 final_track.export(output_file, format='mp3')
@@ -197,3 +225,7 @@ for file in used_files:
         print(f"Warning: Could not rename {file} (error: {e})")
 
 print(f"\nProcess completed! {len(used_files)} music files have been renamed with '_taken' suffix.")
+print("\nPlease remove those files from the music folder to avoid reusing them.")
+print("\nYou can now run the script again to generate a new run mix.")
+print("\n")
+print("=" * 70)
