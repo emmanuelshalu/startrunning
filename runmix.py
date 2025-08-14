@@ -35,7 +35,10 @@ day_sequences = {
     4: 'w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5',
     5: 'w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5',
     6: 'w5,r1,w1,r2,w1,r2,w1,r3,w2,r3,w2,r2,w1,r1,w5',
-    7: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w2,r3,w2,r2,w5'
+    7: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w2,r3,w2,r2,w5',
+    8: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w1,r2,w5',
+    9: 'w5,r2,w1,r4,w1,r5,w2,r4,w2,r3,w5',
+    10: 'w5,r4,w1,r5,w2,r5,w2,r5,w5'
 }
 
 # Prompt user for day selection with clear instructions
@@ -45,7 +48,7 @@ print("=" * 70)
 
 while True:
     try:
-        day_input = input("Enter the day (1-6): ").strip()
+        day_input = input("Enter the day (1-10): ").strip()
         day = int(day_input)
         
         if day in day_sequences:
@@ -55,9 +58,9 @@ while True:
             print(f"Output will be saved as: {output_file}")
             break
         else:
-            print("Invalid day! Please enter 1-6.")
+            print("Invalid day! Please enter 1-10.")
     except ValueError:
-        print("Invalid input! Please enter a number (1-6).")
+        print("Invalid input! Please enter a number (1-10).")
 
 # Combine all music files into one big track
 music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
