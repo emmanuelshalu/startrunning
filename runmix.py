@@ -13,7 +13,8 @@ instruction_times = {
     'r2': 120,
     'r3': 180,
     'r4': 240,
-    'r5': 300
+    'r5': 300,
+    'r6': 360
 }
 
 # Directory setup
@@ -38,7 +39,9 @@ day_sequences = {
     7: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w2,r3,w2,r2,w5',
     8: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w1,r2,w5',
     9: 'w5,r2,w1,r4,w1,r5,w2,r4,w2,r3,w5',
-    10: 'w5,r4,w1,r5,w2,r5,w2,r5,w5'
+    10: 'w5,r4,w1,r5,w2,r5,w2,r5,w5',
+    11: 'w5,r4,w1,r5,w1,r6,w2,r5,w5',
+    12: 'w5,r4,w1,r5,w1,r7,w2,r5,w5'
 }
 
 # Prompt user for day selection with clear instructions
