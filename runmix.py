@@ -14,7 +14,8 @@ instruction_times = {
     'r3': 180,
     'r4': 240,
     'r5': 300,
-    'r6': 360
+    'r6': 360,
+    'r7': 420
 }
 
 # Directory setup
@@ -51,7 +52,7 @@ print("=" * 70)
 
 while True:
     try:
-        day_input = input("Enter the day (1-10): ").strip()
+        day_input = input("Enter the day (1-12): ").strip()
         day = int(day_input)
         
         if day in day_sequences:
@@ -61,9 +62,9 @@ while True:
             print(f"Output will be saved as: {output_file}")
             break
         else:
-            print("Invalid day! Please enter 1-10.")
+            print("Invalid day! Please enter 1-12.")
     except ValueError:
-        print("Invalid input! Please enter a number (1-10).")
+        print("Invalid input! Please enter a number (1-12).")
 
 # Combine all music files into one big track
 music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
