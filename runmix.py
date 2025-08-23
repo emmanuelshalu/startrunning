@@ -66,8 +66,12 @@ while True:
     except ValueError:
         print("Invalid input! Please enter a number (1-12).")
 
-# Combine all music files into one big track
-print("\nLoading music files...")
+# Calculate total music duration needed from sequence
+# We'll add a 10% buffer to ensure we have enough music
+total_sequence_duration = sum(instruction_times[code] for code in sequence) * 1.1  # in seconds
+print(f"\nEstimated music duration needed: {int(total_sequence_duration)} seconds")
+
+# Get list of music files
 music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
 music_files.sort()  # Ensure consistent order
 print(f"Found {len(music_files)} music files")
@@ -75,22 +79,42 @@ print(f"Found {len(music_files)} music files")
 full_music = AudioSegment.empty()
 song_boundaries = []  # Track start and end positions of each song
 current_position = 0
+loaded_duration = 0  # Track total loaded duration in milliseconds
+required_duration = total_sequence_duration * 1000  # Convert to milliseconds
 
-print("Processing music files:")
+print("Loading music files (will stop when enough is loaded):")
 
 for i, file in enumerate(music_files, 1):
-    print(f"  [{i}/{len(music_files)}] Processing: {file}")
-    song = AudioSegment.from_mp3(os.path.join(music_folder, file))
-    song_start = current_position
-    song_end = current_position + len(song)
-    song_boundaries.append({
-        'file': file,
-        'start': song_start,
-        'end': song_end
-    })
-    full_music += song
-    current_position = song_end
-    print(f"    Added {len(song) // 1000} seconds of audio")
+    if loaded_duration >= required_duration:
+        print(f"  Reached required duration of {required_duration//1000} seconds")
+        break
+        
+    print(f"  [{i}] Loading: {file}")
+    try:
+        song = AudioSegment.from_mp3(os.path.join(music_folder, file))
+        song_duration = len(song)
+        song_start = current_position
+        song_end = current_position + song_duration
+        
+        song_boundaries.append({
+            'file': file,
+            'start': song_start,
+            'end': song_end
+        })
+        
+        full_music += song
+        current_position = song_end
+        loaded_duration += song_duration
+        
+        print(f"    Added {song_duration // 1000} seconds of audio")
+        print(f"    Total loaded: {loaded_duration // 1000} / {required_duration // 1000} seconds")
+        
+    except Exception as e:
+        print(f"    Error loading {file}: {str(e)}")
+        continue
+
+print(f"\nFinished loading {len(song_boundaries)} files")
+print(f"Total music loaded: {loaded_duration // 1000} seconds")
 
 cursor = 0
 final_track = AudioSegment.empty()
