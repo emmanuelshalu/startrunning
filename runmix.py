@@ -71,8 +71,9 @@ while True:
 total_sequence_duration = sum(instruction_times[code] for code in sequence) * 1.1  # in seconds
 print(f"\nEstimated music duration needed: {int(total_sequence_duration)} seconds")
 
-# Get list of music files
-music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
+# Get list of music files, excluding those with '_taken' in the name
+music_files = [f for f in os.listdir(music_folder) 
+              if f.endswith('.mp3') and '_taken' not in f]
 music_files.sort()  # Ensure consistent order
 print(f"Found {len(music_files)} music files")
 
