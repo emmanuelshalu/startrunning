@@ -67,13 +67,19 @@ while True:
         print("Invalid input! Please enter a number (1-12).")
 
 # Combine all music files into one big track
+print("\nLoading music files...")
 music_files = [f for f in os.listdir(music_folder) if f.endswith('.mp3')]
 music_files.sort()  # Ensure consistent order
+print(f"Found {len(music_files)} music files")
+
 full_music = AudioSegment.empty()
 song_boundaries = []  # Track start and end positions of each song
 current_position = 0
 
-for file in music_files:
+print("Processing music files:")
+
+for i, file in enumerate(music_files, 1):
+    print(f"  [{i}/{len(music_files)}] Processing: {file}")
     song = AudioSegment.from_mp3(os.path.join(music_folder, file))
     song_start = current_position
     song_end = current_position + len(song)
@@ -84,21 +90,23 @@ for file in music_files:
     })
     full_music += song
     current_position = song_end
+    print(f"    Added {len(song) // 1000} seconds of audio")
 
 cursor = 0
 final_track = AudioSegment.empty()
+print(f"\nTotal music duration: {len(full_music) // 1000} seconds")
 
 # Add the corresponding day mention audio at the beginning
-# d1.mp3 for Day 1, d2.mp3 for Day 2, d3.mp3 for Day 3
-# These files should be placed in the instructions folder
-
+print("\nAdding day announcement...")
 day_mention_code = f'd{day}'
 day_mention_path = os.path.join(instruction_folder, f'{day_mention_code}.mp3')
 if os.path.exists(day_mention_path):
+    print(f"  Adding day {day} announcement")
     day_mention_audio = AudioSegment.from_mp3(day_mention_path)
     final_track += day_mention_audio + AudioSegment.silent(duration=500)
+    print(f"  Added {len(day_mention_audio) // 1000} seconds of day announcement")
 else:
-    print(f"Warning: {day_mention_code}.mp3 not found in instructions folder. Skipping day mention audio.")
+    print(f"  Warning: {day_mention_code}.mp3 not found in instructions folder. Skipping day mention audio.")
 
 # Calculate total duration of the sequence first
 total_duration = sum(instruction_times[code] for code in sequence) * 1000  # in ms
@@ -107,13 +115,19 @@ current_position = 0
 half_way_reached = False
 
 # Process sequence
-for i, code in enumerate(sequence):
+print("\nProcessing sequence:")
+total_segments = len(sequence)
+for i, code in enumerate(sequence, 1):
     # Load instruction MP3
+    print(f"\n[{i}/{total_segments}] Processing segment: {code} ({instruction_times[code]}s)")
     instruction_path = os.path.join(instruction_folder, f'{code}.mp3')
+    print(f"  Loading instruction: {code}.mp3")
     instruction = AudioSegment.from_mp3(instruction_path)
+    print(f"  Adding {len(instruction) // 1000} seconds of instruction audio")
     
     # Add instruction to final track
     final_track += instruction + AudioSegment.silent(duration=500)
+    print(f"  Added instruction to track")
     
     # Get time in ms
     duration_ms = instruction_times[code] * 1000
@@ -146,6 +160,7 @@ for i, code in enumerate(sequence):
         break  # Exit the loop after handling the last instruction
     
     # For non-last instructions, get the music segment for this interval
+    print(f"  Adding {duration_ms // 1000} seconds of music")
     music_segment = full_music[cursor:cursor + duration_ms]
     
     # Check if we've reached or passed the halfway point
@@ -176,12 +191,16 @@ for i, code in enumerate(sequence):
     # Update position and cursor
     current_position += duration_ms
     cursor += duration_ms
+    print(f"  Progress: {current_position // 1000} / {total_duration // 1000} seconds ({int((current_position / total_duration) * 100)}%)")
 
 # Export the final track
+print("\nExporting final mix...")
 final_track.export(output_file, format='mp3')
-print(f"Output saved to {output_file}")
+print(f"\n✅ Success! Output saved to: {output_file}")
+print(f"Total duration: {len(final_track) // 1000} seconds")
 
 # Determine which songs are actually used in the final output
+print("\nAnalyzing music usage...")
 # Calculate the total duration of the final track (excluding day mention and instructions)
 total_music_duration = 0
 temp_cursor = 0  # Use a separate cursor for calculation
@@ -214,11 +233,13 @@ for boundary in song_boundaries:
 
 # Rename only the music files that are actually used in the output
 print("\nRenaming music files used in the output...")
+print(f"\nRenaming used music files ({len(used_files)} files):")
 for file in used_files:
     old_path = os.path.join(music_folder, file)
     # Extract filename without extension
     name_without_ext = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
+    print(f"  Renaming: {file}")
     new_filename = f"{name_without_ext}_taken{extension}"
     new_path = os.path.join(music_folder, new_filename)
     
