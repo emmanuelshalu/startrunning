@@ -1,6 +1,22 @@
 from pydub import AudioSegment
 from pydub.utils import make_chunks
 import os
+import subprocess
+import sys
+
+# Ask user if they want to download music from Spotify
+download_music = input("\nDo you want to download music from Spotify? (yes/no): ").strip().lower()
+if download_music in ('yes', 'y'):
+    print("\nLaunching Spotify downloader...")
+    try:
+        subprocess.run([sys.executable, 'spotify_downloader.py'], check=True)
+        print("\nSpotify download completed. Continuing with run mix generation...")
+    except subprocess.CalledProcessError as e:
+        print(f"\nError running Spotify downloader: {e}")
+        print("Continuing with existing music files...")
+    except FileNotFoundError:
+        print("\nError: spotify_downloader.py not found. Please make sure it's in the same directory.")
+        print("Continuing with existing music files...")
 
 # Time multipliers
 instruction_times = {
