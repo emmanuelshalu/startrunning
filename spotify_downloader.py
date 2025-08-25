@@ -5,6 +5,21 @@ import yt_dlp
 from urllib.parse import quote
 import requests
 from dotenv import load_dotenv
+import subprocess
+import sys
+
+def update_yt_dlp():
+    """Update yt-dlp to the latest version."""
+    try:
+        print("Updating yt-dlp to the latest version...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"])
+        print("yt-dlp updated successfully")
+    except Exception as e:
+        print(f"Warning: Could not update yt-dlp: {e}")
+        print("Continuing with current version...")
+
+# Update yt-dlp before importing it
+update_yt_dlp()
 
 # Load environment variables from .env file
 load_dotenv()
