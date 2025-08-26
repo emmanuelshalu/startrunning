@@ -31,7 +31,20 @@ instruction_times = {
     'r4': 240,
     'r5': 300,
     'r6': 360,
-    'r7': 420
+    'r7': 420,
+    'r8': 480,
+    'r9': 540,
+    'r10': 600,
+    'r11': 660,
+    'r12': 720,
+    'r13': 780,
+    'r14': 840,
+    'r15': 900,
+    'r16': 960,
+    'r17': 1020,
+    'r18': 1080,
+    'r19': 1140,
+    'r20': 1200
 }
 
 # Directory setup
@@ -58,7 +71,19 @@ day_sequences = {
     9: 'w5,r2,w1,r4,w1,r5,w2,r4,w2,r3,w5',
     10: 'w5,r4,w1,r5,w2,r5,w2,r5,w5',
     11: 'w5,r4,w1,r5,w1,r6,w2,r5,w5',
-    12: 'w5,r4,w1,r5,w1,r7,w2,r5,w5'
+    12: 'w5,r4,w1,r5,w1,r7,w2,r5,w5',
+    13: 'w5,r4,w1,r6,w2,r8,w2,r4,w5',
+    14: 'w5,r4,w1,r6,w2,r9,w2,r4,w5',
+    15: 'w5,r4,w1,r6,w2,r10,w2,r4,w5',
+    16: 'w5,r3,w1,r7,w2,r11,w2,r4,w5',
+    17: 'w5,r3,w1,r7,w2,r12,w2,r4,w5',
+    18: 'w5,r3,w1,r7,w2,r13,w2,r4,w5',
+    19: 'w5,r6,w2,r14,w2,r8,w5',
+    20: 'w5,r6,w2,r15,w2,r8,w5',
+    21: 'w5,r6,w2,r16,w2,r8,w5',
+    22: 'w5,r6,w2,r17,w2,r7,w5',
+    23: 'w5,r6,w2,r18,w2,r6,w5',
+    24: 'w5,r10,w3,r20,w5'
 }
 
 # Prompt user for day selection with clear instructions
@@ -144,10 +169,11 @@ day_mention_path = os.path.join(instruction_folder, f'{day_mention_code}.mp3')
 if os.path.exists(day_mention_path):
     print(f"  Adding day {day} announcement")
     day_mention_audio = AudioSegment.from_mp3(day_mention_path)
-    final_track += day_mention_audio + AudioSegment.silent(duration=500)
+    final_track = day_mention_audio + AudioSegment.silent(duration=500)  # Start with day announcement
     print(f"  Added {len(day_mention_audio) // 1000} seconds of day announcement")
 else:
-    print(f"  Warning: {day_mention_code}.mp3 not found in instructions folder. Skipping day mention audio.")
+    print(f"  Warning: {day_mention_code}.mp3 not found in instructions folder. Starting with empty track.")
+    final_track = AudioSegment.silent(duration=0)  # Start with empty track if no day announcement
 
 # Calculate total duration of the sequence first
 total_duration = sum(instruction_times[code] for code in sequence) * 1000  # in ms
@@ -166,43 +192,17 @@ for i, code in enumerate(sequence, 1):
     instruction = AudioSegment.from_mp3(instruction_path)
     print(f"  Adding {len(instruction) // 1000} seconds of instruction audio")
     
-    # Add instruction to final track
-    final_track += instruction + AudioSegment.silent(duration=500)
-    print(f"  Added instruction to track")
-    
-    # Get time in ms
+    # Get time in ms for this segment
     duration_ms = instruction_times[code] * 1000
     
     # Check if this is the last instruction in the sequence
-    is_last_instruction = (i == len(sequence) - 1)
+    is_last_instruction = (i == len(sequence))
     
-    # Handle the last instruction separately
-    if is_last_instruction:
-        # Find the current song that's playing at cursor position
-        current_song_start = 0
-        current_song_end = 0
-        
-        # Calculate which song we're currently in
-        for file in music_files:
-            song_path = os.path.join(music_folder, file)
-            song = AudioSegment.from_mp3(song_path)
-            song_duration = len(song)
-            
-            if current_song_start <= cursor < current_song_start + song_duration:
-                # We found the current song
-                current_song_end = current_song_start + song_duration
-                break
-            current_song_start += song_duration
-        
-        # Extract music from cursor to the end of the current song
-        remaining_duration = current_song_end - cursor
-        music_segment = full_music[cursor:cursor + remaining_duration]
-        final_track += music_segment
-        break  # Exit the loop after handling the last instruction
-    
-    # For non-last instructions, get the music segment for this interval
-    print(f"  Adding {duration_ms // 1000} seconds of music")
+    # Get the music segment for this interval
     music_segment = full_music[cursor:cursor + duration_ms]
+    
+    # Add the instruction with a small silence after it
+    final_track += instruction + AudioSegment.silent(duration=500)
     
     # Check if we've reached or passed the halfway point
     if not half_way_reached and (current_position + duration_ms >= half_way_point):
@@ -219,6 +219,7 @@ for i, code in enumerate(sequence, 1):
         # Add half-time announcement if the file exists
         half_announcement_path = os.path.join(instruction_folder, 'half.mp3')
         if os.path.exists(half_announcement_path):
+            print("  Adding half-time announcement")
             half_announcement = AudioSegment.from_mp3(half_announcement_path)
             final_track += half_announcement + AudioSegment.silent(duration=500)
         
@@ -226,13 +227,20 @@ for i, code in enumerate(sequence, 1):
         final_track += second_half
         half_way_reached = True
     else:
-        # Normal processing if we haven't reached or already passed halfway
+        # Add the full music segment
         final_track += music_segment
     
     # Update position and cursor
     current_position += duration_ms
     cursor += duration_ms
+    
+    # Log progress
+    print(f"  Added {duration_ms // 1000}s of music")
     print(f"  Progress: {current_position // 1000} / {total_duration // 1000} seconds ({int((current_position / total_duration) * 100)}%)")
+    
+    # Exit after processing all instructions
+    if is_last_instruction:
+        break
 
 # Export the final track
 print("\nExporting final mix...")
