@@ -1,7 +1,6 @@
 music/
 output/
 mix/
-.venv/
 build/
 dist/
 *.egg-info/
