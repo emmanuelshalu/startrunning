@@ -21,4 +21,6 @@ python spotify_downloader.py
 
 //if you want to run the flask app
 flask run
+//OR
+python app.py
 -----------------------------------------------------------------
