@@ -93,7 +93,7 @@ print("=" * 70)
 
 while True:
     try:
-        day_input = input("Enter the day (1-12): ").strip()
+        day_input = input("Enter the day (1-24): ").strip()
         day = int(day_input)
         
         if day in day_sequences:
@@ -103,9 +103,9 @@ while True:
             print(f"Output will be saved as: {output_file}")
             break
         else:
-            print("Invalid day! Please enter 1-12.")
+            print("Invalid day! Please enter 1-24.")
     except ValueError:
-        print("Invalid input! Please enter a number (1-12).")
+        print("Invalid input! Please enter a number (1-24).")
 
 # Calculate total music duration needed from sequence
 # We'll add a 10% buffer to ensure we have enough music
