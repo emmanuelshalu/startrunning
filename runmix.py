@@ -23,7 +23,6 @@ instruction_times = {
     'w1': 60,  # in seconds
     'w2': 120,
     'w3': 180,
-    'w4': 240,
     'w5': 300,
     'r1': 60,
     'r2': 120,
@@ -43,8 +42,14 @@ instruction_times = {
     'r16': 960,
     'r17': 1020,
     'r18': 1080,
-    'r19': 1140,
-    'r20': 1200
+    'r20': 1200,
+    'r22': 1320,
+    'r24': 1440,
+    'r26': 1680,
+    'r28': 1800,
+    'r30': 1920,
+    'r32': 2040,
+
 }
 
 # Directory setup
@@ -83,7 +88,14 @@ day_sequences = {
     21: 'w5,r6,w2,r16,w2,r8,w5',
     22: 'w5,r6,w2,r17,w2,r7,w5',
     23: 'w5,r6,w2,r18,w2,r6,w5',
-    24: 'w5,r10,w3,r20,w5'
+    24: 'w5,r10,w3,r20,w5',
+    25: 'w5,r8,w3,r22,w5',
+    26: 'w5,r6,w2,r24,w5',
+    27: 'w5,r4,w2,r26,w5',
+    28: 'w5,r2,w2,r28,w5',
+    29: 'w5,r30,w5',
+    30: 'w5,r32,w5'
+
 }
 
 # Prompt user for day selection with clear instructions
@@ -93,7 +105,7 @@ print("=" * 70)
 
 while True:
     try:
-        day_input = input("Enter the day (1-24): ").strip()
+        day_input = input("Enter the day (1-30): ").strip()
         day = int(day_input)
         
         if day in day_sequences:
@@ -103,9 +115,9 @@ while True:
             print(f"Output will be saved as: {output_file}")
             break
         else:
-            print("Invalid day! Please enter 1-24.")
+            print("Invalid day! Please enter 1-30.")
     except ValueError:
-        print("Invalid input! Please enter a number (1-24).")
+        print("Invalid input! Please enter a number (1-30).")
 
 # Calculate total music duration needed from sequence
 # We'll add a 10% buffer to ensure we have enough music
