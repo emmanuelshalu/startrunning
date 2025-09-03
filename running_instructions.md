@@ -1,17 +1,20 @@
 //if you want to run the app
 
 '''
-//Create a virtual environment(replace 'mix' with any name you want)- one time activity
+//ONE TIME ACTIVITY
+//Create a virtual environment(replace 'mix' with any name you want)
 python -m venv mix
 '''
-
+//EVERY TIME
 //first activate the virtual environment
 source mix/bin/activate
 
+//ONE TIME ACTIVITY
 //then install requirements
 pip install -r requirements.txt
 
-//then run the app- every time
+//EVERY TIME
+//then run the app- 
 python runmix.py
 -----------------------------------------------------------------
 
