@@ -127,7 +127,8 @@ def generate_run_mix(day):
         }
         
         sequence = day_sequences[day].split(',')
-        output_file = os.path.join(app.config['OUTPUT_FOLDER'], f'day{day}_run_mix.mp3')
+        sequence_code = '_'.join(sequence)
+        output_file = os.path.join(app.config['OUTPUT_FOLDER'], f'day{day}_{sequence_code}.mp3')
         
         # Calculate total duration needed
         total_duration = sum(time_multipliers[code] for code in sequence) * 1.1  # 10% buffer
