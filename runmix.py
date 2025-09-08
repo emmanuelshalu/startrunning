@@ -110,8 +110,8 @@ while True:
         
         if day in day_sequences:
             sequence = day_sequences[day].split(',')
-            sequence_code = '_'.join(sequence)
-            output_file = os.path.join(output_folder, f'day{day}_{sequence_code}.mp3')  # Set output filename in output folder
+            sequence_code = ''.join(sequence)
+            output_file = os.path.join(output_folder, f'D{day}-{sequence_code}.mp3')  # Set output filename in output folder
             print(f"Selected Day {day} sequence with {len(sequence)} intervals")
             print(f"Output will be saved as: {output_file}")
             break
