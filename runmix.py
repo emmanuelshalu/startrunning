@@ -1,8 +1,14 @@
 from pydub import AudioSegment
 from pydub.utils import make_chunks
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, APIC, TIT2, TPE1, TALB, TCON, TDRC
 import os
 import subprocess
 import sys
+import datetime
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
+import textwrap
 
 # Ask user if they want to download music from Spotify
 download_music = input("\nDo you want to download music from Spotify? (yes/no): ").strip().lower()
@@ -110,7 +116,7 @@ while True:
         
         if day in day_sequences:
             sequence = day_sequences[day].split(',')
-            sequence_code = ''.join(sequence)
+            sequence_code = ','.join(sequence)
             output_file = os.path.join(output_folder, f'D{day}-{sequence_code}.mp3')  # Set output filename in output folder
             print(f"Selected Day {day} sequence with {len(sequence)} intervals")
             print(f"Output will be saved as: {output_file}")
@@ -255,9 +261,91 @@ for i, code in enumerate(sequence, 1):
     if is_last_instruction:
         break
 
+def add_album_art(mp3_path, title, artist, album, artwork_path=None):
+    """
+    Add album art and metadata to an MP3 file
+    
+    Args:
+        mp3_path (str): Path to the MP3 file
+        title (str): Track title
+        artist (str): Artist name
+        album (str): Album name
+        artwork_path (str, optional): Path to artwork image. If None, generates a default one.
+    """
+    try:
+        # Create default artwork if none provided
+        if not artwork_path or not os.path.exists(artwork_path):
+            # Create a simple image with text
+            img = Image.new('RGB', (800, 800), color=(40, 40, 40))
+            d = ImageDraw.Draw(img)
+            
+            # Load a font (using default font if not available)
+            try:
+                font_large = ImageFont.truetype("Arial Bold.ttf", 40)
+                font_small = ImageFont.truetype("Arial.ttf", 24)
+            except:
+                font_large = ImageFont.load_default()
+                font_small = ImageFont.load_default()
+            
+            # Add text
+            d.text((400, 300), title, fill=(255, 255, 255), font=font_large, anchor="mm")
+            d.text((400, 380), f"by {artist}", fill=(200, 200, 200), font=font_small, anchor="mm")
+            d.text((400, 420), album, fill=(180, 180, 255), font=font_large, anchor="mm")
+            
+            # Draw a border
+            d.rectangle([50, 50, 750, 750], outline=(100, 100, 255), width=5)
+            
+            # Save to BytesIO
+            img_byte_arr = BytesIO()
+            img.save(img_byte_arr, format='PNG')
+            img_data = img_byte_arr.getvalue()
+        else:
+            # Use provided artwork
+            with open(artwork_path, 'rb') as img_file:
+                img_data = img_file.read()
+        
+        # Add ID3 tag if it doesn't exist
+        try:
+            audio = MP3(mp3_path, ID3=ID3)
+        except:
+            audio = MP3()
+            audio.add_tags()
+        
+        # Add album art
+        audio.tags.add(
+            APIC(
+                encoding=3,  # 3 is for utf-8
+                mime='image/png',  # image/jpeg or image/png
+                type=3,  # 3 is for the cover image
+                desc=u'Cover',
+                data=img_data
+            )
+        )
+        
+        # Add basic metadata
+        audio.tags.add(TIT2(encoding=3, text=title))
+        audio.tags.add(TPE1(encoding=3, text=artist))
+        audio.tags.add(TALB(encoding=3, text=album))
+        audio.tags.add(TCON(encoding=3, text="Workout"))
+        audio.tags.add(TDRC(encoding=3, text=str(datetime.datetime.now().year)))
+        
+        # Save the changes
+        audio.save()
+        return True
+    except Exception as e:
+        print(f"Warning: Could not add album art: {e}")
+        return False
+
 # Export the final track
 print("\nExporting final mix...")
 final_track.export(output_file, format='mp3')
+
+# Add album art and metadata
+title = f"RunMix - Day {day}"
+artist = "RunMix Generator"
+album = f"Sequence {sequence_code}"
+add_album_art(output_file, title, artist, album)
+
 print(f"\n✅ Success! Output saved to: {output_file}")
 print(f"Total duration: {len(final_track) // 1000} seconds")
 
@@ -315,8 +403,7 @@ for file in used_files:
     except Exception as e:
         print(f"Warning: Could not rename {file} (error: {e})")
 
-print(f"\nProcess completed! {len(used_files)} music files have been renamed with '_taken' suffix.")
-print("\nPlease remove those files from the music folder to avoid reusing them.")
+print(f"\nProcess completed! {len(used_files)} music files have been renamed with '_taken' suffix and wont be used again.")
 print("\nYou can now run the script again to generate a new run mix.")
 print("\n")
 print("=" * 70)

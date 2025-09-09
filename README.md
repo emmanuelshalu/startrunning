@@ -56,6 +56,8 @@ A high-performance application for creating custom running mixes with precise in
 - **Progress Tracking**: Real-time updates during mix generation
 - **File Management**: Automatically renames used files to prevent reuse
 - **Efficient Processing**: Optimized for large music libraries
+- **Album Artwork**: Generates and embeds professional album art with metadata
+- **ID3 Tags**: Includes track title, artist, album, and year information
 
 ### Workout Sequences
 - 12 pre-defined interval patterns (Day 1-12)
@@ -99,7 +101,11 @@ source venv/bin/activate
 
 ### 3. Install Dependencies
 ```bash
+# Install all required packages
 pip install -r requirements.txt
+
+# Verify installation
+python -c "import pydub, mutagen, PIL; print('All dependencies installed successfully')"
 ```
 ## 🚀 Usage
 
@@ -162,6 +168,25 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 ## 📞 Support
 
 For support, please open an issue on our [GitHub repository](https://github.com/emmanuelshalu/startrunning/issues).
+
+## 🖼️ Album Artwork & Metadata
+
+RunMix Generator automatically adds professional-looking album artwork and metadata to your mixes:
+
+### Features
+- **Auto-generated Artwork**: Creates a clean, modern cover with workout details
+- **Custom Images**: Option to use your own cover image
+- **Complete Metadata**: Includes:
+  - Track title (e.g., "RunMix - Day 7")
+  - Artist ("RunMix Generator")
+  - Album (e.g., "Running Workout - Day 7")
+  - Genre ("Workout")
+  - Year
+
+### Using Custom Artwork
+1. Place your image file (JPEG or PNG) in the project root
+2. Name it `cover.jpg` or `cover.png`
+3. The script will automatically use it for all generated mixes
 
 ## 🎵 Adding Music
 
