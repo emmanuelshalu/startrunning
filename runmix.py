@@ -77,7 +77,7 @@ day_sequences = {
     4: 'w5,r1,w1,r1,w1,r2,w1,r2,w2,r2,w2,r1,w1,r1,w5',
     5: 'w5,r1,w1,r2,w1,r2,w1,r2,w2,r2,w2,r2,w1,r1,w5',
     6: 'w5,r1,w1,r2,w1,r2,w1,r3,w2,r3,w2,r2,w1,r1,w5',
-    7: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w2,r3,w2,r2,w5',
+    7: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r3,w2,r2,w5',
     8: 'w5,r2,w1,r2,w1,r3,w2,r4,w2,r4,w1,r2,w5',
     9: 'w5,r2,w1,r4,w1,r5,w2,r4,w2,r3,w5',
     10: 'w5,r4,w1,r5,w2,r5,w2,r5,w5',
