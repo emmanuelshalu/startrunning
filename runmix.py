@@ -390,7 +390,7 @@ for file in used_files:
     name_without_ext = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
     print(f"  Renaming: {file}")
-    new_filename = f"{name_without_ext}_taken{extension}"
+    new_filename = f"{name_without_ext}_takenD{day}{extension}"
     new_path = os.path.join(music_folder, new_filename)
     
     try:
